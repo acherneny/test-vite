@@ -5,7 +5,7 @@ import './App.css';
 
 import { useTimerContext } from './TimerContext.tsx';
 
-function App() {
+const App = () => {
   const {
     timers,
 
@@ -19,7 +19,7 @@ function App() {
   console.log('timers: ', timers);
   return (
     <Box
-      sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      sx={{ display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'center' }}
     >
       <Typography component="h1" variant="h4" gutterBottom>
         Simple Timers
@@ -31,7 +31,7 @@ function App() {
 
       <Grid container>
         <Grid item xs>
-          <Button>Add New Timer</Button>
+          <Button onClick={() => handleAddTimer()}>Add New Timer</Button>
         </Grid>
 
         <Grid item>
@@ -39,12 +39,11 @@ function App() {
         </Grid>
       </Grid>
 
-      <button onClick={() => handleAddTimer()}>AddTimer</button>
 
       <Grid container spacing={2} sx={{ overflow: 'auto' }}>
-        {timers.map(() => (
+        {timers.map((timer) => (
           <Grid item xs>
-            <TimerCard />
+            <TimerCard timer={timer} key={timer.id}/>
           </Grid>
         ))}
       </Grid>

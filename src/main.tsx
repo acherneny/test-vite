@@ -16,7 +16,7 @@ import './index.css';
 const defaultTheme = createTheme();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <ThemeProvider theme={defaultTheme}>
       <TimeContextProvider>
         <Container component="main" maxWidth="xs">
@@ -26,5 +26,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </Container>
       </TimeContextProvider>
     </ThemeProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

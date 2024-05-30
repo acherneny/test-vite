@@ -6,11 +6,12 @@ import {
   useCallback,
 } from 'react';
 
-type TimerHistoryItem = { startTime: string; stopStop?: string };
 
 type TimerType = {
   id: string;
-  history: TimerHistoryItem[];
+
+  timePassed: number,
+  lastTime: number,
 };
 
 type TimerContextInitialState = {
@@ -21,19 +22,24 @@ type TimerContextType = {
   timers: TimerType[];
 
   handleAddTimer: () => void;
-  handleRemoveTimer: () => void;
+  handleRemoveTimer: (timerId: string) => void;
 
-  handleStartTimer: () => void;
-  handlePauseTimer: () => void;
+  handleUpdateTimer: (timerId: string) => void;
 };
 
 const initialState: TimerContextInitialState = {
-  timers: [] as TimerType[],
+  timers: [],
 };
 
 export const TimeContext = createContext<TimerContextType>(
-  // TODO: Define correct initial state
-  null as unknown as TimerContextType
+  {
+    timers: [],
+
+    handleAddTimer: () => { },
+    handleRemoveTimer: () => { },
+
+    handleUpdateTimer: () => { },
+  }
 );
 
 export const useTimerContext = () => useContext<TimerContextType>(TimeContext);
@@ -50,7 +56,7 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const handleAddTimer = useCallback(
     () =>
       setTimersState((timersState) => ({
-        timers: [{ id: getId(), history: [] }, ...timersState.timers],
+        timers: [{ id: getId(), timePassed: 0, lastTime: 0 }, ...timersState.timers],
       })),
     []
   );
@@ -64,20 +70,14 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
     []
   );
 
-  // Start timer by timerId
-  const handleStartTimer = useCallback(
+  const handleUpdateTimer = useCallback(
     (timerId: string) =>
       setTimersState((timersState) => ({
         timers: timersState.timers.map((timer) => {
           if (timer.id === timerId) {
             return {
               ...timer,
-
-              history: [
-                // Add new history Item with currect startTime and empty stopStop
-                { startTime: String(new Date()), stopStop: '' },
-                ...timer.history,
-              ],
+              prevTimer: Date.now()
             };
           }
 
@@ -87,31 +87,9 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
     []
   );
 
-  // Pause timer by timerId
-  const handlePauseTimer = useCallback(
-    (timerId: string) =>
-      setTimersState((timersState) => ({
-        timers: timersState.timers.map((timer) => {
-          if (timer.id === timerId) {
-            return {
-              ...timer,
 
-              history: [
-                {
-                  startTime: timer.history[0].startTime,
-                  stopStop: String(new Date()),
-                },
 
-                ...timer.history,
-              ],
-            };
-          }
 
-          return timer;
-        }),
-      })),
-    []
-  );
 
   const value = useMemo(
     () => ({
@@ -120,16 +98,14 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
       handleAddTimer,
       handleRemoveTimer,
 
-      handleStartTimer,
-      handlePauseTimer,
+      handleUpdateTimer,
     }),
     [
       timersState,
       handleAddTimer,
       handleRemoveTimer,
 
-      handleStartTimer,
-      handlePauseTimer,
+      handleUpdateTimer,
     ]
   );
 
