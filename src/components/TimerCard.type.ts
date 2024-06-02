@@ -6,4 +6,7 @@ export type TimerCardProps = {
   handleResetTimer: (timerId: string) => void;
   handleUpdateTimer: (timer: TimerType) => void;
   handleUpdateTimerTick: (timerId: string) => void;
+
+  isSelected: boolean;
+  toggleSelectedTimer: (timerId: string) => void;
 };

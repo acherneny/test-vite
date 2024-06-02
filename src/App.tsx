@@ -3,22 +3,42 @@ import TimerCard from './components/TimerCard.tsx';
 
 import './App.css';
 
-import useTimerContext  from './context/useTimerContext';
+import useTimerContext from './context/useTimerContext';
+
+import TimerType from './types/timer.type.ts';
 
 const App = () => {
   const {
     timers,
 
     handleAddTimer,
+    handleRemoveTimer,
     handleResetTimer,
 
     handleUpdateTimer,
     handleUpdateTimerTick,
+
+    selectedTimerIds,
+    toggleSelectedTimer,
   } = useTimerContext();
+
+  const isTimerSelected = (timer: TimerType) =>
+    selectedTimerIds.indexOf(timer.id) > -1;
+
+  const handleRemoveTimers = () => {
+    selectedTimerIds.forEach((timerId) => {
+      handleRemoveTimer(timerId);
+    });
+  };
 
   return (
     <Box
-      sx={{ display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'center' }}
+      sx={{
+        display: 'flex',
+        height: '100%',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
     >
       <Typography component="h1" variant="h4" gutterBottom>
         Simple Timers
@@ -34,20 +54,31 @@ const App = () => {
         </Grid>
 
         <Grid item>
-          <Button>Remove Timer(s)</Button>
+          <Button
+            disabled={selectedTimerIds.length === 0}
+            onClick={handleRemoveTimers}
+          >
+            Remove Timer(s)
+          </Button>
         </Grid>
       </Grid>
 
-
       <Grid container spacing={2} sx={{ overflow: 'auto' }}>
         {timers.map((timer) => (
-          <Grid item xs key={timer.id}>
-            <TimerCard timer={timer} handleUpdateTimer={handleUpdateTimer} handleUpdateTimerTick={handleUpdateTimerTick} handleResetTimer={handleResetTimer} />
+          <Grid item xs={12} key={timer.id}>
+            <TimerCard
+              timer={timer}
+              handleUpdateTimer={handleUpdateTimer}
+              handleUpdateTimerTick={handleUpdateTimerTick}
+              handleResetTimer={handleResetTimer}
+              isSelected={isTimerSelected(timer)}
+              toggleSelectedTimer={toggleSelectedTimer}
+            />
           </Grid>
         ))}
       </Grid>
     </Box>
   );
-}
+};
 
 export default App;

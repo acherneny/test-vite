@@ -13,4 +13,7 @@ export type TimerContextType = {
 
   handleUpdateTimer: (timer: TimerType) => void;
   handleUpdateTimerTick: (timerId: string) => void;
+
+  selectedTimerIds: string[];
+  toggleSelectedTimer: (timerId: string) => void;
 };

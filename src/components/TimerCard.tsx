@@ -1,15 +1,17 @@
-import React, { FC, useEffect, useState, useRef, } from 'react'
+import React, { FC, useEffect, useState, useRef } from 'react';
 import {
   Card,
-  CardActions,
+  CardHeader,
   CardContent,
+  CardActions,
   Button,
   Typography,
+  Checkbox,
 } from '@mui/material';
 
-import msToHMS from '../utils/msToHMS'
+import msToHMS from '../utils/msToHMS';
 
-import { TimerCardProps } from './TimerCard.type'
+import { TimerCardProps } from './TimerCard.type';
 
 // I would place it to env, but not sure you will have the same env as i do
 // Step in Milliseconds
@@ -21,65 +23,88 @@ const TimerCard: FC<TimerCardProps> = (props) => {
     handleResetTimer,
     handleUpdateTimer,
     handleUpdateTimerTick,
-  } = props
 
-  const [isPaused, setIsPaused] = useState(true)
+    isSelected,
+    toggleSelectedTimer,
+  } = props;
+
+  const [isPaused, setIsPaused] = useState(true);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const handleStart = () => {
-    setIsPaused(false)
-    handleUpdateTimer({ ...timer, lastTime: Date.now() })
+    setIsPaused(false);
+    handleUpdateTimer({ ...timer, lastTime: Date.now() });
 
     intervalRef.current = setInterval(() => {
-      handleUpdateTimerTick(timer.id)
+      handleUpdateTimerTick(timer.id);
     }, timerStep);
-  }
+  };
 
   const handlePause = () => {
-    setIsPaused(true)
-    handleUpdateTimerTick(timer.id)
+    setIsPaused(true);
+    handleUpdateTimerTick(timer.id);
 
     if (intervalRef.current) {
-      clearInterval(intervalRef.current)
+      clearInterval(intervalRef.current);
     }
-  }
+  };
 
   const handleReset = () => {
-    setIsPaused(true)
-    handleResetTimer(timer.id)
+    setIsPaused(true);
+    handleResetTimer(timer.id);
 
     if (intervalRef.current) {
-      clearInterval(intervalRef.current)
+      clearInterval(intervalRef.current);
     }
-  }
+  };
 
-  useEffect(() => () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-    }
-  }, [])
+  useEffect(
+    () => () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    },
+    []
+  );
 
-  const isTimerStarted = timer.timePassed !== 0
+  const handleToggleSelectedTimer = () => {
+    toggleSelectedTimer(timer.id);
+  };
 
-  const startTimerLabel = !isTimerStarted ? 'Start' : 'Continue'
+  const isTimerStarted = timer.timePassed !== 0;
+
+  const startTimerLabel = !isTimerStarted ? 'Start' : 'Continue';
 
   return (
-    <Card sx={{ maxWidth: 450 }}>
+    <Card>
+      <CardHeader
+        title={`ID: ${timer.id}`}
+        action={
+          <Checkbox checked={isSelected} onChange={handleToggleSelectedTimer} />
+        }
+      />
+
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           Time: {msToHMS(timer.timePassed)}
         </Typography>
       </CardContent>
 
-
       <CardActions>
-        {isPaused ?
-          <Button size="small" onClick={handleStart}>{startTimerLabel}</Button> :
-          <Button size="small" onClick={handlePause}>Pause</Button>
-        }
+        {isPaused ? (
+          <Button size="small" onClick={handleStart}>
+            {startTimerLabel}
+          </Button>
+        ) : (
+          <Button size="small" onClick={handlePause}>
+            Pause
+          </Button>
+        )}
 
-        <Button disabled={!isTimerStarted} onClick={handleReset}>Reset</Button>
+        <Button disabled={!isTimerStarted} onClick={handleReset}>
+          Reset
+        </Button>
       </CardActions>
     </Card>
   );

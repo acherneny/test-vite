@@ -1,32 +1,30 @@
-import React, {
-  createContext,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { createContext, useState, useMemo, useCallback } from 'react';
 
-import { TimerContextInitialState, TimerContextType } from './TimerContext.type'
+import {
+  TimerContextInitialState,
+  TimerContextType,
+} from './TimerContext.type';
 
-import TimerType from '../types/timer.type.ts'
-import getId from '../utils/getId.ts'
+import TimerType from '../types/timer.type.ts';
+import getId from '../utils/getId.ts';
 
 const initialState: TimerContextInitialState = {
   timers: [],
 };
 
-export const TimeContext = createContext<TimerContextType>(
-  {
-    timers: [],
+export const TimeContext = createContext<TimerContextType>({
+  timers: [],
 
-    handleAddTimer: () => { },
-    handleRemoveTimer: () => { },
-    handleResetTimer: () => { },
+  handleAddTimer: () => {},
+  handleRemoveTimer: () => {},
+  handleResetTimer: () => {},
 
-    handleUpdateTimer: () => { },
-    handleUpdateTimerTick: () => { },
-  }
-);
+  handleUpdateTimer: () => {},
+  handleUpdateTimerTick: () => {},
 
+  selectedTimerIds: [],
+  toggleSelectedTimer: () => {},
+});
 
 const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const [timersState, setTimersState] =
@@ -36,7 +34,10 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const handleAddTimer = useCallback(
     () =>
       setTimersState((timersState) => ({
-        timers: [{ id: getId(), timePassed: 0, lastTime: 0 }, ...timersState.timers],
+        timers: [
+          { id: getId(), timePassed: 0, lastTime: 0 },
+          ...timersState.timers,
+        ],
       })),
     []
   );
@@ -60,10 +61,10 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
               id: timerId,
               timePassed: 0,
               lastTime: 0,
-            }
+            };
           }
 
-          return timer
+          return timer;
         }),
       })),
     []
@@ -84,21 +85,35 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
       setTimersState((timersState) => ({
         timers: timersState.timers.map((timer) => {
           if (timer.id === timerId) {
-            const now = Date.now()
+            const now = Date.now();
             return {
               ...timer,
 
               timePassed: timer.timePassed + (Date.now() - timer.lastTime),
               lastTime: now,
-            }
+            };
           }
 
-          return timer
-        }
-        ),
+          return timer;
+        }),
       })),
     []
   );
+
+  const [selectedTimerIds, setSelectedTimerIds] = useState<string[]>([]);
+
+  const toggleSelectedTimer = useCallback((timerId: string) => {
+    setSelectedTimerIds((selectedTimerIds) =>
+      // If timer selected:
+      selectedTimerIds.indexOf(timerId) > -1
+        ? // - remove from the selected list
+          selectedTimerIds.filter(
+            (selectedTimerId) => selectedTimerId !== timerId
+          )
+        : // - otherwise - add to the selected list
+          [timerId, ...selectedTimerIds]
+    );
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -109,7 +124,10 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
       handleResetTimer,
 
       handleUpdateTimer,
-      handleUpdateTimerTick
+      handleUpdateTimerTick,
+
+      selectedTimerIds,
+      toggleSelectedTimer,
     }),
     [
       timersState,
@@ -119,7 +137,10 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
       handleResetTimer,
 
       handleUpdateTimer,
-      handleUpdateTimerTick
+      handleUpdateTimerTick,
+
+      selectedTimerIds,
+      toggleSelectedTimer,
     ]
   );
 
