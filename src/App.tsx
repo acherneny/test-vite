@@ -1,22 +1,21 @@
-import { Box, Typography, Grid, Button } from '@mui/material';
-import TimerCard from './TimerCard';
+import React, { Box, Typography, Grid, Button } from '@mui/material';
+import TimerCard from './components/TimerCard.tsx';
 
 import './App.css';
 
-import { useTimerContext } from './TimerContext.tsx';
+import useTimerContext  from './context/useTimerContext';
 
 const App = () => {
   const {
     timers,
 
     handleAddTimer,
-    // handleRemoveTimer,
+    handleResetTimer,
 
-    // handleStartTimer,
-    // handlePauseTimer,
+    handleUpdateTimer,
+    handleUpdateTimerTick,
   } = useTimerContext();
 
-  console.log('timers: ', timers);
   return (
     <Box
       sx={{ display: 'flex', height: '100%', flexDirection: 'column', alignItems: 'center' }}
@@ -42,8 +41,8 @@ const App = () => {
 
       <Grid container spacing={2} sx={{ overflow: 'auto' }}>
         {timers.map((timer) => (
-          <Grid item xs>
-            <TimerCard timer={timer} key={timer.id}/>
+          <Grid item xs key={timer.id}>
+            <TimerCard timer={timer} handleUpdateTimer={handleUpdateTimer} handleUpdateTimerTick={handleUpdateTimerTick} handleResetTimer={handleResetTimer} />
           </Grid>
         ))}
       </Grid>
