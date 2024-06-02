@@ -16,7 +16,7 @@ export const TimeContext = createContext<TimerContextType>({
   timers: [],
 
   handleAddTimer: () => {},
-  handleRemoveTimer: () => {},
+  handleRemoveTimers: () => {},
   handleResetTimer: () => {},
 
   handleUpdateTimer: () => {},
@@ -29,6 +29,8 @@ export const TimeContext = createContext<TimerContextType>({
 const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const [timersState, setTimersState] =
     useState<TimerContextInitialState>(initialState);
+
+  const [selectedTimerIds, setSelectedTimerIds] = useState<string[]>([]);
 
   // Create and add new timer to the list of timers
   const handleAddTimer = useCallback(
@@ -43,12 +45,14 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   );
 
   // Remove timer from the list of timers by timerId
-  const handleRemoveTimer = useCallback(
-    (timerId: string) =>
+  const handleRemoveTimers = useCallback(
+    () =>
       setTimersState((timersState) => ({
-        timers: timersState.timers.filter((timer) => timer.id !== timerId),
+        timers: timersState.timers.filter(
+          (timer) => selectedTimerIds.indexOf(timer.id) === -1
+        ),
       })),
-    []
+    [selectedTimerIds]
   );
 
   // Reset timer from the list of timers by timerId
@@ -100,8 +104,6 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
     []
   );
 
-  const [selectedTimerIds, setSelectedTimerIds] = useState<string[]>([]);
-
   const toggleSelectedTimer = useCallback((timerId: string) => {
     setSelectedTimerIds((selectedTimerIds) =>
       // If timer selected:
@@ -120,7 +122,7 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
       timers: timersState.timers,
 
       handleAddTimer,
-      handleRemoveTimer,
+      handleRemoveTimers,
       handleResetTimer,
 
       handleUpdateTimer,
@@ -133,7 +135,7 @@ const TimeContextProvider: React.FC<React.PropsWithChildren> = (props) => {
       timersState,
 
       handleAddTimer,
-      handleRemoveTimer,
+      handleRemoveTimers,
       handleResetTimer,
 
       handleUpdateTimer,

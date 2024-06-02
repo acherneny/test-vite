@@ -8,7 +8,7 @@ export type TimerContextType = {
   timers: TimerType[];
 
   handleAddTimer: () => void;
-  handleRemoveTimer: (timerId: string) => void;
+  handleRemoveTimers: () => void;
   handleResetTimer: (timerId: string) => void;
 
   handleUpdateTimer: (timer: TimerType) => void;

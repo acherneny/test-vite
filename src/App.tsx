@@ -12,7 +12,7 @@ const App = () => {
     timers,
 
     handleAddTimer,
-    handleRemoveTimer,
+    handleRemoveTimers,
     handleResetTimer,
 
     handleUpdateTimer,
@@ -24,12 +24,6 @@ const App = () => {
 
   const isTimerSelected = (timer: TimerType) =>
     selectedTimerIds.indexOf(timer.id) > -1;
-
-  const handleRemoveTimers = () => {
-    selectedTimerIds.forEach((timerId) => {
-      handleRemoveTimer(timerId);
-    });
-  };
 
   return (
     <Box
